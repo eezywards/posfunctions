@@ -16,7 +16,7 @@ public class CreateAccountBusiness {
      */
     @FunctionName("createAccountBusiness")
     public HttpResponseMessage run(
-            @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
+            @HttpTrigger(name = "req", methods = {HttpMethod.POST}, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
         context.getLogger().info("Java HTTP trigger processed a request.");
 
@@ -27,7 +27,7 @@ public class CreateAccountBusiness {
         String businessName = reqj.getString("businessName");
         String businessEmail = reqj.getString("businessEmail");
         String ethAddress = reqj.getString("ethAddress");
-        
+
 
         String query = request.getQueryParameters().get("name");
         String name = request.getBody().orElse(query);
