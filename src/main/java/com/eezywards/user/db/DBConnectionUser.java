@@ -46,5 +46,32 @@ public class DBConnectionUser{
 
 
     }
+    public JSONObject getUser() throws SQLException{
+        Connection conex = getConnection();
+        Statement st = conex.createStatement();
+        ResultSet rs = st.executeQuery("select * from users where ethaddress=?");
+        JSONObject user = new JSONObject();
+        if(rs.next()){
+            user.put("success", true);
+        }else{
+            user.put("success", false);
+        }
+        closeConnection(conex);
+        return user;
+        
+    }
+
+    public void saveTransaction(String address, String amount) throws SQLException{
+
+        Connection conex = getConnection();
+        PreparedStatement ps = conex.prepareStatement("insert into transactions (ethaddress, amount) values (?, ?)");
+
+        ps.setString(1, address);
+        ps.setString(2, amount);
+        ps.executeUpdate();
+        closeConnection(conex);
+        
+
+    }
     
 }

@@ -1,7 +1,11 @@
-package com.ezzywards.user;
+package com.eezywards.user;
 
 import java.util.*;
+
+import org.json.JSONObject;
+
 import com.microsoft.azure.functions.annotation.*;
+import com.eezywards.user.db.DBConnectionUser;
 import com.microsoft.azure.functions.*;
 
 /**
@@ -17,16 +21,18 @@ public class GetUser {
     public HttpResponseMessage run(
             @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("Java HTTP trigger processed a request.");
+        context.getLogger().info("GetUser.java");
 
-        // Parse query parameter
-        String query = request.getQueryParameters().get("name");
-        String name = request.getBody().orElse(query);
-
-        if (name == null) {
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass a name on the query string or in the request body").build();
-        } else {
-            return request.createResponseBuilder(HttpStatus.OK).body("Hello, " + name).build();
+        DBConnectionUser db = new DBConnectionUser();
+        JSONObject toRet = new JSONObject();
+        try{
+            toRet = db.getUser();
+            
+        }catch(Exception e){
+            context.getLogger().info("Error: " + e.getMessage());
+            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage()).build();
         }
+
+        return request.createResponseBuilder(HttpStatus.OK).body(toRet.toString()).build();
     }
 }
