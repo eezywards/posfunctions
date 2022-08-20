@@ -67,4 +67,17 @@ public class DBConnectionM {
         st.executeUpdate("insert into accountbusiness (businessName, businessEmail, ethAddress) values ('"+businessName+"',  '"+businessEmail+"', '"+ethAddress+"')");
         closeConnection(conex);
     }
+
+    public JSONObject readAccountBusiness() throws SQLException {
+        Connection conex = getConnection();
+        Statement st = conex.createStatement();
+        ResultSet rs = st.executeQuery("select * from accountbusiness limit 1");
+        JSONObject accountBusiness = new JSONObject();
+        while(rs.next()){
+            accountBusiness.put("businessName", rs.getString("businessName"));
+            accountBusiness.put("businessEmail", rs.getString("businessEmail"));
+            accountBusiness.put("ethAddress", rs.getString("ethAddress"));
+        }
+        return accountBusiness;
+    }
 }
