@@ -15,9 +15,13 @@ public class DBConnectionM {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             String serverName = System.getenv("DBSERVERNAME");
-            String user = System.getenv("USERNAME");
-            String password = System.getenv("PASSWORD");
+            String user = System.getenv("DBUSERNAME");
+            String password = System.getenv("DBPASSWORD");
             String dbname = System.getenv("DBNAME");
+            System.out.println("Connecting to MySQL Server: " + serverName);
+            System.out.println("Connecting to MySQL Database: " + dbname);
+            System.out.println("Connecting with user: " + user);
+            
             conex = DriverManager.getConnection("jdbc:mysql://" + serverName + ":3306/" + dbname, user, password);
             
         } catch (ClassNotFoundException e) {
@@ -30,7 +34,7 @@ public class DBConnectionM {
         conex.close();
     }
     
-    public static void insertProducts(JSONArray products) throws SQLException{
+    public  void insertProducts(JSONArray products) throws SQLException{
         Connection conex = getConnection();
         Statement st = conex.createStatement();
         for(int i=0;i<products.length();i++){
@@ -42,19 +46,25 @@ public class DBConnectionM {
         closeConnection(conex);
     }
     
-    public static JSONArray getProducts() throws SQLException{
+    public  JSONArray getProducts() throws SQLException{
         Connection conex = getConnection();
         Statement st = conex.createStatement();
         ResultSet rs = st.executeQuery("select * from products");
         JSONArray products = new JSONArray();
         while(rs.next()){
             JSONObject product = new JSONObject();
-            product.put("id", rs.getInt("id"));
             product.put("name", rs.getString("name"));
             product.put("price", rs.getString("price"));
             products.put(product);
         }
         closeConnection(conex);
         return products;
+    }
+
+    public void createAccountBusiness(String businessName, String businessEmail, String ethAddress) throws SQLException {
+        Connection conex = getConnection();
+        Statement st = conex.createStatement();
+        st.executeUpdate("insert into accountbusiness (businessName, businessEmail, ethAddress) values ('"+businessName+"',  '"+businessEmail+"', '"+ethAddress+"')");
+        closeConnection(conex);
     }
 }

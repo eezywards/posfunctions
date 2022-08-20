@@ -4,7 +4,7 @@ import java.util.*;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
 import org.json.*;
-
+import com.eezywards.db.DBConnectionM;
 /**
  * Azure Functions with HTTP Trigger.
  */
@@ -27,15 +27,18 @@ public class CreateAccountBusiness {
         String businessName = reqj.getString("businessName");
         String businessEmail = reqj.getString("businessEmail");
         String ethAddress = reqj.getString("ethAddress");
-
-
-        String query = request.getQueryParameters().get("name");
-        String name = request.getBody().orElse(query);
-
-        if (name == null) {
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass a name on the query string or in the request body").build();
-        } else {
-            return request.createResponseBuilder(HttpStatus.OK).body("Hello, " + name).build();
+        
+        //save to db 
+        DBConnectionM db = new DBConnectionM();
+        try{
+            db.createAccountBusiness(businessName, businessEmail, ethAddress);
+        }catch(Exception e){
+            context.getLogger().info("Error: " + e.getMessage());
+            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage()).build();
         }
+        return request.createResponseBuilder(HttpStatus.OK).body("{\"status\":\"success\"}").build();
+
+
+        
     }
 }
