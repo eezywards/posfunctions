@@ -87,6 +87,7 @@ public class DBConnectionM {
             accountBusiness.put("businessName", rs.getString("businessName"));
             accountBusiness.put("businessEmail", rs.getString("businessEmail"));
             accountBusiness.put("ethAddress", rs.getString("ethAddress"));
+            accountBusiness.put("id",rs.getString("id"));
         }
         return accountBusiness;
     }

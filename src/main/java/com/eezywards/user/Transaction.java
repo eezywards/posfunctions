@@ -25,11 +25,12 @@ public class Transaction {
 
         JSONObject jsonr = new JSONObject(request.getBody().get());
         String ethAddress = jsonr.getString("ethAddress");
-        String amount = jsonr.getString("amount");
+        String amount = jsonr.get("amount")+"";
+        String businessId = jsonr.getString("businessId");
 
         DBConnectionUser db = new DBConnectionUser();
         try{
-            db.saveTransaction(ethAddress, amount);
+            db.saveTransaction(ethAddress, amount,businessId);
             return request.createResponseBuilder(HttpStatus.OK).body("{\"success\": true}").build();
         }catch(Exception e){
             context.getLogger().info("Error: " + e.getMessage());
