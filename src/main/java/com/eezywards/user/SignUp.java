@@ -23,7 +23,7 @@ public class SignUp {
      * 1. curl -d "HTTP Body" {your host}/api/SignUp
      * 2. curl {your host}/api/SignUp?name=HTTP%20Query
      */
-    @FunctionName("SignUp")
+    @FunctionName("signUp")
     public HttpResponseMessage run(
             @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
@@ -32,11 +32,31 @@ public class SignUp {
 
         String email=reqj.getString("email");
         String ethAddress = reqj.getString("ethAddress");
+        context.getLogger().info(email);
+        context.getLogger().info(ethAddress);
+        
         JSONObject verificationResponse = reqj.getJSONObject("verificationResponse");
 
         JSONObject verifyIsHuman = makeVerifyRequest(verificationResponse, context);
 
-        if(verifyIsHuman.getString("success").equals("true")){
+        context.getLogger().info(verifyIsHuman.toString());
+
+        boolean isSuccess = verifyIsHuman.has("success");
+        boolean hasDetail = verifyIsHuman.has("detail");
+        boolean alreadyVerified = false;
+
+        if(hasDetail){
+            String detail = verifyIsHuman.getString("detail");
+            context.getLogger().info(detail);
+            if(detail.contains("invalid ")){
+                return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(detail).build();
+            }
+            if(detail.contains("already verified")){
+                return request.createResponseBuilder(HttpStatus.OK).body("{\"status\":\"success\"}").build();
+            }
+        }
+
+        if(isSuccess){
             String nullifier_hash = verifyIsHuman.getString("nullifier_hash");
             DBConnectionUser db = new DBConnectionUser();
             try{
@@ -47,16 +67,19 @@ public class SignUp {
             }
             return request.createResponseBuilder(HttpStatus.OK).body("{\"status\":\"success\"}").build();
         }
-
-
         // Parse query parameter
-        return request.createResponseBuilder(HttpStatus.OK).body("Java HTTP trigger processed a request.").build();
+        return request.createResponseBuilder(HttpStatus.OK).body("{\"status\":\"success\"}").build();
        
     }
 
     public JSONObject makeVerifyRequest(JSONObject verificationResponse, final ExecutionContext context) {
         try{
         //make http request
+            //adding to verification response.
+            verificationResponse.put("action_id", "wid_staging_596c03ac5927bce7957ef868d1484240");
+            verificationResponse.put("signal", "my_signal");
+            context.getLogger().info(verificationResponse.toString());
+
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost("https://developer.worldcoin.org/api/v1/verify");
             httpPost.setHeader("Content-Type", "application/json");
@@ -66,6 +89,13 @@ public class SignUp {
             context.getLogger().info("Response Code : " + response.getStatusLine().getStatusCode());
             context.getLogger().info("Response Message : " + response.getStatusLine().getReasonPhrase());
             context.getLogger().info("Response Body : " + response.getEntity().getContent());
+
+            //print code 
+            context.getLogger().info("Response Code : " + response.getStatusLine().getStatusCode());
+            context.getLogger().info("Response Message : " + response.getStatusLine().getReasonPhrase());
+            context.getLogger().info("Response Body : " + response.getEntity().getContent());
+
+
             return new JSONObject(response.getEntity().getContent());
         }catch(Exception e){
             context.getLogger().info("Error: " + e.getMessage());

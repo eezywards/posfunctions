@@ -64,7 +64,7 @@ public class DBConnectionUser{
     public void saveTransaction(String address, String amount,String businessId) throws SQLException{
 
         Connection conex = getConnection();
-        PreparedStatement ps = conex.prepareStatement("insert into transactions (ethaddress, amount) values (?, ?)");
+        PreparedStatement ps = conex.prepareStatement("insert into transactions (ethaddress, amount,merchant) values (?, ?,?)");
 
         ps.setString(1, address);
         ps.setString(2, amount);
