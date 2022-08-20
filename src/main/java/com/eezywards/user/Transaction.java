@@ -1,4 +1,4 @@
-package com.ezzywards.user;
+package com.eezywards.user;
 
 import java.util.*;
 
@@ -19,7 +19,7 @@ public class Transaction {
      */
     @FunctionName("transaction")
     public HttpResponseMessage run(
-            @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
+            @HttpTrigger(name = "req", methods = {HttpMethod.POST}, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
         context.getLogger().info("Java HTTP trigger processed a request.");
 
@@ -35,8 +35,6 @@ public class Transaction {
             context.getLogger().info("Error: " + e.getMessage());
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage()).build();
         }
-
-        
 
     }
 }
