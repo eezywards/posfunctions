@@ -2,6 +2,7 @@ package com.eezywards.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -38,10 +39,15 @@ public class DBConnectionM {
         Connection conex = getConnection();
         Statement st = conex.createStatement();
         for(int i=0;i<products.length();i++){
+            PreparedStatement ps = conex.prepareStatement("insert into products (name,price) values (?, ?)");
             JSONObject product = products.getJSONObject(i);
             String name = product.getString("name");
             String price = product.getString("price");
-            st.executeUpdate("insert into products (name,  price) values ('"+name+"',  '"+price+"')");
+            ps.setString(1, name);
+            ps.setString(2, price);
+            ps.executeUpdate();
+            
+
         }
         closeConnection(conex);
     }
@@ -63,8 +69,12 @@ public class DBConnectionM {
 
     public void createAccountBusiness(String businessName, String businessEmail, String ethAddress) throws SQLException {
         Connection conex = getConnection();
-        Statement st = conex.createStatement();
-        st.executeUpdate("insert into accountbusiness (businessName, businessEmail, ethAddress) values ('"+businessName+"',  '"+businessEmail+"', '"+ethAddress+"')");
+        PreparedStatement ps = conex.prepareStatement("insert into accountbusiness (businessName, businessEmail, ethAddress) values (?, ?, ?)");
+        ps.setString(1, businessName);
+        ps.setString(2, businessEmail);
+        ps.setString(3, ethAddress);
+        ps.executeUpdate();
+        
         closeConnection(conex);
     }
 
