@@ -34,13 +34,20 @@ public class DBConnectionUser{
         conex.close();
     }
     public void createAccountUser(String email, String ethAddress, String nullifier_hash) throws SQLException{
+        
         Connection conex = getConnection();
-        PreparedStatement ps = conex.prepareStatement("insert into users (email, eth_address, nullifier_hash) values (?, ?, ?)");
+        PreparedStatement ps = conex.prepareStatement("SELECT 1 from users where nullifier_hash = ?");
+        ps.setString(1, nullifier_hash);
+        ResultSet rs = ps.executeQuery();
+        if(!rs.next()){
+            ps = conex.prepareStatement("INSERT INTO users (email, eth_address, nullifier_hash) VALUES (?, ?, ?)");
+            ps.setString(1, email);
+            ps.setString(2, ethAddress);
+            ps.setString(3, nullifier_hash);
+            ps.executeUpdate();
+        }
 
-        ps.setString(1, email);
-        ps.setString(2, ethAddress);
-        ps.setString(3, nullifier_hash);
-        ps.executeUpdate();
+
         closeConnection(conex);
         
 

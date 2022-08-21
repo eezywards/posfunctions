@@ -45,19 +45,10 @@ public class SignUp {
         boolean hasDetail = verifyIsHuman.has("detail");
         boolean alreadyVerified = false;
 
-        if(hasDetail){
-            String detail = verifyIsHuman.getString("detail");
-            context.getLogger().info(detail);
-            if(detail.contains("invalid ")){
-                return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(detail).build();
-            }
-            if(detail.contains("already verified")){
-                return request.createResponseBuilder(HttpStatus.OK).body("{\"status\":\"success\"}").build();
-            }
-        }
+        
 
-        if(isSuccess){
-            String nullifier_hash = verifyIsHuman.getString("nullifier_hash");
+        if(isSuccess || hasDetail){
+            String nullifier_hash = verifyIsHuman.has("nullifier_hash")?verifyIsHuman.getString("nullifier_hash"):"";
             DBConnectionUser db = new DBConnectionUser();
             try{
                 db.createAccountUser(email, ethAddress,nullifier_hash);
@@ -90,10 +81,7 @@ public class SignUp {
             context.getLogger().info("Response Message : " + response.getStatusLine().getReasonPhrase());
             context.getLogger().info("Response Body : " + response.getEntity().getContent());
 
-            //print code 
-            context.getLogger().info("Response Code : " + response.getStatusLine().getStatusCode());
-            context.getLogger().info("Response Message : " + response.getStatusLine().getReasonPhrase());
-            context.getLogger().info("Response Body : " + response.getEntity().getContent());
+            
 
 
             return new JSONObject(response.getEntity().getContent());
