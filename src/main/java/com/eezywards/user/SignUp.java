@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.json.*;
 
 
@@ -81,6 +82,8 @@ public class SignUp {
             context.getLogger().info("Response Message : " + response.getStatusLine().getReasonPhrase());
             context.getLogger().info("Response Body : " + response.getEntity().getContent());
 
+            String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
+            context.getLogger().info("responseString: " + responseString);
             
 
 
