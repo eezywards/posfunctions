@@ -17,16 +17,19 @@ public class GetUser {
      * 1. curl -d "HTTP Body" {your host}/api/GetUser
      * 2. curl {your host}/api/GetUser?name=HTTP%20Query
      */
-    @FunctionName("GetUser")
+    @FunctionName("getUser")
     public HttpResponseMessage run(
             @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
         context.getLogger().info("GetUser.java");
 
         DBConnectionUser db = new DBConnectionUser();
+
+        String ethAddress = request.getQueryParameters().get("ethAddress");
+
         JSONObject toRet = new JSONObject();
         try{
-            toRet = db.getUser();
+            toRet = db.getUser(ethAddress);
             
         }catch(Exception e){
             context.getLogger().info("Error: " + e.getMessage());

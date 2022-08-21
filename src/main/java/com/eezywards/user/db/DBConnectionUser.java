@@ -53,7 +53,7 @@ public class DBConnectionUser{
 
 
     }
-    public JSONObject getUser() throws SQLException{
+    public JSONObject getUser(String ethAddress) throws SQLException{
         Connection conex = getConnection();
         Statement st = conex.createStatement();
         ResultSet rs = st.executeQuery("select * from users where ethaddress=?");
